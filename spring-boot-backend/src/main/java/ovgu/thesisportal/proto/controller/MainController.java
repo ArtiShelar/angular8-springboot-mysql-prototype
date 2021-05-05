@@ -33,12 +33,18 @@ public class MainController {
 		return "Thesis Topic Saved";
 	}
 
-	@RequestMapping("/update")
+	@PutMapping("/update")
 	public void update() {
 	}
 
 	@GetMapping("/readall")
 	public @ResponseBody Iterable<ThesisTopic> getAllTopics() {
 		return thesisTopicRepository.findAll();
+	}
+	@DeleteMapping("/delete/{thesis_id}")
+	public @ResponseBody void deleteThesisTopic (@PathVariable long thesis_id){
+		ThesisTopic thesisTopic = thesisTopicRepository.findById(thesis_id)
+			.orElseThrow(() -> new ResourceNotFoundException("Thesis Topic not found for this id:: "+ thesis_id));
+		thesisTopicRepository.deleteById(thesis_id)
 	}
 }
