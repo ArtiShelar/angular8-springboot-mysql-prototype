@@ -72,4 +72,10 @@ public class MainController {
 	public @ResponseBody Iterable<ThesisTopic> getAllTopics() {
 		return thesisTopicRepository.findAll();
 	}
+	@PostMapping("/delete")
+	public @ResponseBody void deleteThesisTopic (@RequestParam long thesis_id) throws ResourceNotFoundException {
+		ThesisTopic thesisTopic = thesisTopicRepository.findById(thesis_id)
+				.orElseThrow(() -> new ResourceNotFoundException("Thesis Topic not found for this id:: "+ thesis_id));
+		thesisTopicRepository.deleteById(thesis_id);
+	}
 }
