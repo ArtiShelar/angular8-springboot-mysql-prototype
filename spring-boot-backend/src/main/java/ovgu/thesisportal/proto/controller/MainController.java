@@ -50,18 +50,44 @@ public class MainController {
 		return "Thesis Topic Saved";
 	}
 
-	@PutMapping("/update/{id}")
-	public ResponseEntity<ThesisTopic> updateThesisTopic(@RequestBody ThesisTopic newTopic, @PathVariable(value = "id") Long id)
+	@PostMapping("/update/{id}")
+	public ResponseEntity<ThesisTopic> updateThesisTopic(@PathVariable(value = "id") Long id,
+														 @RequestParam(required = false) String title,
+														 @RequestParam(required = false) String desc,
+														 @RequestParam(required = false) String supervisor,
+														 @RequestParam(required = false) String contact_email,
+														 @RequestParam(required = false) String must_have,
+														 @RequestParam(required = false) String nice_to_have,
+														 @RequestParam(required = false) String start_date)
 			throws ResourceNotFoundException {
 		ThesisTopic thesisTopic = thesisTopicRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Thesis not found for this id :: " + id));
-		thesisTopic.setTopic_title(newTopic.getTopic_title());
-		thesisTopic.setTopic_desc(newTopic.getTopic_desc());
-		thesisTopic.setStart_date(newTopic.getStart_date());
-		thesisTopic.setSupervisor(newTopic.getSupervisor());
-		thesisTopic.setContact_email(newTopic.getContact_email());
-		thesisTopic.setMust_have(newTopic.getMust_have());
-		thesisTopic.setNice_to_have(newTopic.getNice_to_have());
+		System.out.println(thesisTopic);
+		if (title!=null) {
+			thesisTopic.setTopic_title(title);
+		}
+		if (desc!=null) {
+			thesisTopic.setTopic_desc(desc);
+		}
+		try {
+			if (start_date!=null) {
+				thesisTopic.setStart_date(new SimpleDateFormat("dd/MM/yyyy").parse(start_date));
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		if (supervisor!=null) {
+			thesisTopic.setSupervisor(supervisor);
+		}
+		if (contact_email!=null) {
+			thesisTopic.setContact_email(contact_email);
+		}
+		if (must_have!=null) {
+			thesisTopic.setMust_have(must_have);
+		}
+		if (nice_to_have!=null) {
+			thesisTopic.setNice_to_have(nice_to_have);
+		}
 		final ThesisTopic updatedTopic = thesisTopicRepository.save(thesisTopic);
 		return ResponseEntity.ok(updatedTopic);
 	}
@@ -72,6 +98,7 @@ public class MainController {
 	public @ResponseBody Iterable<ThesisTopic> getAllTopics() {
 		return thesisTopicRepository.findAll();
 	}
+
 	@PostMapping("/delete")
 	public @ResponseBody void deleteThesisTopic (@RequestParam long thesis_id) throws ResourceNotFoundException {
 		ThesisTopic thesisTopic = thesisTopicRepository.findById(thesis_id)
